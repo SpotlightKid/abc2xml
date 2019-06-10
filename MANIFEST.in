@@ -1,0 +1,3 @@
+include abc2xml.html
+include abc2xml_changelog.html
+include Makefile
