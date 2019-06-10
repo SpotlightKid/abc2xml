@@ -13,13 +13,24 @@ without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
 See the Lesser GNU General Public License for more details. <http://www.gnu.org/licenses/lgpl.html>.
 '''
 
-from pyparsing import Word, OneOrMore, Optional, Literal, NotAny, MatchFirst
-from pyparsing import Group, oneOf, Suppress, ZeroOrMore, Combine, FollowedBy
-from pyparsing import srange, CharsNotIn, StringEnd, LineEnd, White, Regex
-from pyparsing import nums, alphas, alphanums, ParseException, Forward
-try:    import xml.etree.cElementTree as E
-except: import xml.etree.ElementTree as E
-import types, sys, os, re, datetime
+import datetime
+import os
+import re
+import sys
+import time
+import types
+from glob import glob
+from optparse import OptionParser
+
+from pyparsing import (CharsNotIn, Combine, FollowedBy, Forward, Group, LineEnd, Literal,
+                       MatchFirst, NotAny, OneOrMore, Optional, ParseException, Regex, StringEnd,
+                       Suppress, White, Word, ZeroOrMore, alphanums, alphas, nums, oneOf, srange)
+
+try:
+    import xml.etree.cElementTree as E
+except:
+    import xml.etree.ElementTree as E
+
 
 VERSION = 220
 
@@ -2097,10 +2108,7 @@ def expand_abc_include (abctxt):
 #----------------
 # Main Program
 #----------------
-if __name__ == '__main__':
-    from optparse import OptionParser
-    from glob import glob
-    import time
+def main(args=None):
     global mxm  # keep instance of MusicXml
     global abc_header, abc_voice, abc_scoredef, abc_percmap # keep computed grammars
     mxm = MusicXml ()
@@ -2115,7 +2123,7 @@ if __name__ == '__main__':
     parser.add_option ("-b", action="store_true", help="line break at EOL", default=False)
     parser.add_option ("--meta", action="store", help="map infofields to XML metadata, MAP = R:poet,Z:lyricist,N:...", default='', metavar='MAP')
     parser.add_option ("-f", action="store_true", help="force string/fret allocations for tab staves", default=False)
-    options, args = parser.parse_args ()
+    options, args = parser.parse_args (args if args is not None else sys.argv[1:])
     if len (args) == 0: parser.error ('no input file given')
     pad = options.o
     if options.mxl and options.mxl not in ['a','add', 'r', 'replace']:
@@ -2167,3 +2175,7 @@ if __name__ == '__main__':
             except ParseException: pass         # output already printed
             except Exception as err: info ('an exception occurred.\n%s' % err)
     info ('done in %.2f secs' % (time.time () - t_start))
+
+
+if __name__ == '__main__':
+    sys.exit(main(sys.argv[1:]) or 0)
